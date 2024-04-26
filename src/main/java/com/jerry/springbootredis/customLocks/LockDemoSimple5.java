@@ -23,7 +23,7 @@ public class LockDemoSimple5 {
 
     private String value;
 
-    private ThreadLocal<String> keyMap = new ThreadLocal<String>();
+    private ThreadLocal<String> keyMap = new ThreadLocal<String>();//保存线程内部的局部变量
 
     @Autowired
     private ScheduledExecutorService scheduledExecutorService;
@@ -35,13 +35,14 @@ public class LockDemoSimple5 {
      */
     public boolean trySimpleLock(String key) {
         keyMap.set(key);
+
         // 尝试获取锁
         String uuid = UUID.randomUUID().toString();
+        this.value = uuid;
         System.out.println(Thread.currentThread().getName() + "获取锁   " + key + "   " + uuid + "方法被调用");
         // 原子性操作setNX
         if (redisTemplate.opsForValue().setIfAbsent(key, uuid)) {
             // 加锁
-            this.value = uuid;
             renewKey(Thread.currentThread(), key);
             return true;
         }
@@ -76,7 +77,7 @@ public class LockDemoSimple5 {
     }
 
     /***
-     * 尝试加锁
+     * 尝试加锁（阻塞）
      * @param key
      * @param timeout
      * @return
@@ -116,7 +117,6 @@ public class LockDemoSimple5 {
 
     /**
      * 定时续费
-     *
      * @param thread
      * @param key
      */

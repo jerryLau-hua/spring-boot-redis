@@ -56,7 +56,7 @@ public class LockDemoSimple4 {
 
     /**
      * 定时续费
-     * @param thread
+     * @param thread 线程
      * @param key
      */
     public void renewKey(Thread thread, String key) {
